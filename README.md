@@ -1,6 +1,6 @@
 # dict
 ## Copyright
-Copyright Jonathan Karlsson, 2023
+Public domain
 
 github.com/SirJonthe
 
