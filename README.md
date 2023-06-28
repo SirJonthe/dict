@@ -5,7 +5,7 @@ Copyright Jonathan Karlsson, 2023
 github.com/SirJonthe
 
 ## About
-`dict` is a minimalist library that introduces an dictionary, hash table, or map type to C++11.
+`dict` is a minimalist library that introduces a dictionary, hash table, or map type to C++11.
 
 ## Design
 `dict` is intended to be minimal. It does not depend on STL, nor any other external library. It is a header-only library. It contains only the minimum amount of functionality to provide a useful data structure.
