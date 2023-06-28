@@ -1,4 +1,4 @@
-# arr
+# dict
 ## Copyright
 Copyright Jonathan Karlsson, 2023
 
