@@ -1,6 +1,6 @@
 # dict
 ## Copyright
-Public domain
+Public domain, 2023
 
 github.com/SirJonthe
 
