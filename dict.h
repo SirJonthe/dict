@@ -98,7 +98,6 @@ namespace cc0
 		{
 			index    idx[NUM_ENTRIES_IN_TABLE]; // Indices to either the value array or table array.
 			uint64_t refs;                      // The number of in-use values in this table.
-			uint64_t i;
 		};
 
 		static table &init_table(table &t);
@@ -379,7 +378,6 @@ typename cc0::dict<key_t, value_t, cmp_fn>::table &cc0::dict<key_t, value_t, cmp
 		t.idx[i] = { index::NIL, 0 };
 	}
 	t.refs = 0;
-	t.i = 0;
 	return t;
 }
 
@@ -430,7 +428,6 @@ value_t &cc0::dict<key_t, value_t, cmp_fn>::alloc(uint64_t t, const key_t &k, ui
 	index i = m_tabs[t].idx[bytes(k)[level]];
 	if (i.type == index::VAL) { // Collision!
 		init_table(m_tabs.add()).idx[bytes(m_vals[i.index].k)[level + 1]] = i;
-		m_tabs.last().i = m_tabs.size() - 1;
 		i.type = index::TAB;
 		i.index = m_tabs.size() - 1;
 		m_tabs[t].idx[bytes(k)[level]] = i;
