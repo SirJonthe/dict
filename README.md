@@ -47,8 +47,53 @@ int main()
 ```
 Note that there is a difference between the [] and () operators. () will guarantee that a value is available to be returned. If it does not already exist, a new value is created and returned by reference. The [] operator, on the other hand, will return null if the key is not present in the dictionary.
 
+### Keys and comparisons
+Trivial fundamental types like `int`, `char`, and `float` can be used directly as keys without too much trouble.
+```
+cc0::dict<unsigned int, const char*> d; // Use unsigned integers as keys to access C strings.
+```
+
+When key types become too large, too complex, or reference data indirectly, the user may want to consider either constructing a dedicated key type which contains a hash of the data, or constructing a custom comparison function.
+```
+struct array
+{
+	const int *values;
+	uint32_t size;
+};
+
+cc0::dict<array, float> d; // Use an array as key to access floating-point values. This may NOT work as expected.
+```
+Keys are compared using bytewise equality. This means that two keys referencing data indirectly may reference two different memory locations which both contain the same values. By default, the keys will be treated as inequal. If the user wishes that two keys referencing different memory locations but the same values to be treated as equal the user needs to hash the intended key, and provide the hash as key instead. The user may choose to use template specialization of the provided `cc0::key` type, or roll their own. In the example below the `cc0::key` is specialized:
+```
+struct array
+{
+	const int *values;
+	uint32_t size;
+};
+
+template<>
+class cc0::key<array>
+{
+	uint64_t k;
+
+	key(const array &a) {
+		cc0::fnv1a64 hasher;
+		for (uint32_t i = 0; i < a.size; ++i) {
+			hasher(a[i]);
+		}
+		hasher(a.size);
+		k = hasher;
+	}
+};
+
+cc0::dict<key<array>, float> d;
+```
+Note the use of `cc0::fnv1a64` which performs a bytewise ingestion of the input data. This hashing method, which is not cryptographically secure, comes with `dict`, but the user may use another hashing method or even implement their own key type altogether as long as valid key comparisons can be done in a bytewise fashion.
+
+The `cc0::key` type already has a specialized 64-bit version to deal with plain C strings so the user will not need to take action if 64 bit FNV1a hashing is acceptable.
+
 ### Strings as keys
-Using global constant strings as keys:
+Oftentimes, global constant strings may be used as keys without much issue:
 ```
 #include "dict/dict.h"
 
@@ -60,7 +105,20 @@ int main()
 	return 0;
 }
 ```
-Note that this will mainly work for constant global strings. Dynamically allocated strings containing the same data as constant global strings will not work as the default behavior is to use the bit pattern in the pointer of the string as the key, rather than the contents of the string itself. C and C++ just happens to store constant strings globally in the binary, meaning repeated use of the same constant inline string will yield the same pointer.
+However, due to how the compiler decides to lay out memory, constant strings containing the same sequence of characters may not always be located on the same memory address. It is therefore recommended that dedicated key types are used instead of raw C strings. `dict` ships with a specialized version of `cc0::key` to deal with raw C strings:
+
+```
+#include "dict/dict.h"
+
+int main()
+{
+	cc0::dict<cc0::key<const char*>,int> d;
+	d("Hello") = 1;
+	d("World") = 2;
+	return 0;
+}
+```
+This changes the behavior of the dictionary so that strings containing the same sequence of characters will be treated as equal regardless of if the two keys reference different memory locations.
 
 ### Checking for existence
 Check if elements exist:
@@ -70,7 +128,7 @@ Check if elements exist:
 
 int main()
 {
-	cc0::dict<const char*,int> d;
+	cc0::dict<cc0::key<const char*>,int> d;
 	d("Hello") = 1;
 	if (d["Hello"] != nullptr) {
 		std::cout << "\"Hello\" exists and contains " << *d["Hello"] << std::endl;
@@ -86,19 +144,19 @@ There is a slight difference in behavior between the const version and non-const
 ```
 #include "dict/dict.h"
 
-void nonconstant(cc0::dict<const char*,int> &d)
+void nonconstant(cc0::dict<cc0::key<const char*>,int> &d)
 {
 	d("Hello") = 12; // Creates a key-value pair in the table if it does not already exist.
 }
 
-int constant(const cc0::dict<const char*,int> &d)
+int constant(const cc0::dict<cc0::key<const char*>,int> &d)
 {
 	return d("World"); // Can not modify the dictionary, so instead it assumes that the value must already exist. If this is false the application will likely crash.
 }
 
 int main()
 {
-	cc0::dict<const char*,int> d;
+	cc0::dict<cc0::key<const char*>,int> d;
 	nonconstant(d);
 	constant(d);
 	return 0;
@@ -114,7 +172,7 @@ Erase elements:
 
 int main()
 {
-	cc0::dict<const char*,int> d;
+	cc0::dict<cc0::key<const char*>,int> d;
 	d("Hello") = 1;
 	d.remove("Hello");
 	if (d["Hello"] == nullptr) {
