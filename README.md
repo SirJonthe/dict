@@ -263,3 +263,5 @@ int main()
 
 ## Future work
 The current implementation of the dictionary may reserve quite a bit of memory. As elements are removed from the dictionary, the dictionary memory usage does not reduce. This is a clear area of improvement moving forward.
+
+Remove FNV1a64 as an explicit package included in `dict` as this will clash with the `sum` library.
