@@ -17,73 +17,73 @@ namespace cc0
 		/// @param s The null-terminated string.
 		/// @return The number of characters in the string.
 		uint64_t str_count(const char *s);
-	}
 
-	/// @brief A 64-bit FNV1a hasher.
-	class fnv1a64
-	{
-	public:
-		uint64_t h;
-	
-	private:
-		/// @brief Hashes a number of bytes in the input byte array.
-		/// @param in The input byte array.
-		/// @param num_bytes The number of bytes to hash.
-		void ingest(const void *in, uint64_t num_bytes);
-	
-	public:
-		/// @brief Default constructor.
-		fnv1a64( void );
-
-		/// @brief Hashes the bytes in the input value.
-		/// @tparam type_t The type of the input value.
-		/// @param in The input value.
-		template < typename type_t >
-		fnv1a64(const type_t &in);
-
-		/// @brief Hashes the bytes in the input byte array.
-		/// @param in The input byte array.
-		/// @param num_bytes The number of bytes to hash.
-		fnv1a64(const void *in, uint64_t num_bytes);
-
-		/// @brief Copies the state of another hasher.
-		/// @param NA The object to copy.
-		fnv1a64(const fnv1a64&) = default;
+		/// @brief A 64-bit FNV1a hasher.
+		class fnv1a64
+		{
+		public:
+			uint64_t h;
 		
-		/// @brief Copies the state of another hasher.
-		/// @param NA The object to copy.
-		/// @return A reference to self.
-		fnv1a64 &operator=(const fnv1a64&) = default;
+		private:
+			/// @brief Hashes a number of bytes in the input byte array.
+			/// @param in The input byte array.
+			/// @param num_bytes The number of bytes to hash.
+			void ingest(const void *in, uint64_t num_bytes);
+		
+		public:
+			/// @brief Default constructor.
+			fnv1a64( void );
 
-		/// @brief Hashes the bytes in the input value.
-		/// @tparam type_t The type of the input value.
-		/// @param in The input value.
-		/// @return A reference to self.
-		template < typename type_t >
-		fnv1a64 &operator()(const type_t &in);
+			/// @brief Hashes the bytes in the input value.
+			/// @tparam type_t The type of the input value.
+			/// @param in The input value.
+			template < typename type_t >
+			fnv1a64(const type_t &in);
 
-		/// @brief Copies the current state of the hasher, and hashes the bytes in the input value.
-		/// @tparam type_t The type of the input value.
-		/// @param in The input value.
-		/// @return A copy of self.
-		template < typename type_t >
-		fnv1a64 operator()(const type_t &in) const;
+			/// @brief Hashes the bytes in the input byte array.
+			/// @param in The input byte array.
+			/// @param num_bytes The number of bytes to hash.
+			fnv1a64(const void *in, uint64_t num_bytes);
 
-		/// @brief Hashes the bytes in the input byte array.
-		/// @param in The input byte array.
-		/// @param num_bytes The number of bytes to hash.
-		/// @return A reference to self.
-		fnv1a64 &operator()(const void *in, uint64_t num_bytes);
+			/// @brief Copies the state of another hasher.
+			/// @param NA The object to copy.
+			fnv1a64(const fnv1a64&) = default;
+			
+			/// @brief Copies the state of another hasher.
+			/// @param NA The object to copy.
+			/// @return A reference to self.
+			fnv1a64 &operator=(const fnv1a64&) = default;
 
-		/// @brief Copies the current state of the hasher, and hashes the bytes in the byte array.
-		/// @param in The input byte array.
-		/// @param num_bytes The number of bytes to hash.
-		/// @return A copy of self.
-		fnv1a64 operator()(const void *in, uint64_t num_bytes) const;
+			/// @brief Hashes the bytes in the input value.
+			/// @tparam type_t The type of the input value.
+			/// @param in The input value.
+			/// @return A reference to self.
+			template < typename type_t >
+			fnv1a64 &operator()(const type_t &in);
 
-		/// @brief Returns the current state of the digest.
-		operator uint64_t( void ) const;
-	};
+			/// @brief Copies the current state of the hasher, and hashes the bytes in the input value.
+			/// @tparam type_t The type of the input value.
+			/// @param in The input value.
+			/// @return A copy of self.
+			template < typename type_t >
+			fnv1a64 operator()(const type_t &in) const;
+
+			/// @brief Hashes the bytes in the input byte array.
+			/// @param in The input byte array.
+			/// @param num_bytes The number of bytes to hash.
+			/// @return A reference to self.
+			fnv1a64 &operator()(const void *in, uint64_t num_bytes);
+
+			/// @brief Copies the current state of the hasher, and hashes the bytes in the byte array.
+			/// @param in The input byte array.
+			/// @param num_bytes The number of bytes to hash.
+			/// @return A copy of self.
+			fnv1a64 operator()(const void *in, uint64_t num_bytes) const;
+
+			/// @brief Returns the current state of the digest.
+			operator uint64_t( void ) const;
+		};
+	}
 
 	/// @brief A generic key generator.
 	/// @tparam type_t The type to base the key off of.
@@ -281,18 +281,18 @@ namespace cc0
 // fnv1a64
 //
 template < typename type_t >
-cc0::fnv1a64::fnv1a64(const type_t &in) : fnv1a64(&in, sizeof(in))
+cc0::internal::fnv1a64::fnv1a64(const type_t &in) : fnv1a64(&in, sizeof(in))
 {}
 
 template < typename type_t >
-cc0::fnv1a64 &cc0::fnv1a64::operator()(const type_t &in)
+cc0::internal::fnv1a64 &cc0::internal::fnv1a64::operator()(const type_t &in)
 {
 	ingest(&in, sizeof(in));
 	return *this;
 }
 
 template < typename type_t >
-cc0::fnv1a64 cc0::fnv1a64::operator()(const type_t &in) const
+cc0::internal::fnv1a64 cc0::internal::fnv1a64::operator()(const type_t &in) const
 {
 	return fnv1a64(*this)(in);
 }
@@ -302,7 +302,7 @@ cc0::fnv1a64 cc0::fnv1a64::operator()(const type_t &in) const
 //
 
 template < typename type_t >
-cc0::key<type_t>::key(const type_t &v) : k(cc0::fnv1a64(&v, sizeof(v)))
+cc0::key<type_t>::key(const type_t &v) : k(cc0::internal::fnv1a64(&v, sizeof(v)))
 {}
 
 //
