@@ -1,6 +1,7 @@
-/// @file
+/// @file dict.cpp
+/// @brief Contains a minimalist library that introduces a dictionary, hash table, or map type.
 /// @author github.com/SirJonthe
-/// @date 2023
+/// @date 2023, 2025
 /// @copyright Public domain.
 /// @license CC0 1.0
 
@@ -11,7 +12,7 @@
 
 namespace cc0
 {
-	namespace internal
+	namespace dict_internal
 	{
 		/// @brief Counts the number of characters in the given null-terminated string.
 		/// @param s The null-terminated string.
@@ -281,18 +282,18 @@ namespace cc0
 // fnv1a64
 //
 template < typename type_t >
-cc0::internal::fnv1a64::fnv1a64(const type_t &in) : fnv1a64(&in, sizeof(in))
+cc0::dict_internal::fnv1a64::fnv1a64(const type_t &in) : fnv1a64(&in, sizeof(in))
 {}
 
 template < typename type_t >
-cc0::internal::fnv1a64 &cc0::internal::fnv1a64::operator()(const type_t &in)
+cc0::dict_internal::fnv1a64 &cc0::dict_internal::fnv1a64::operator()(const type_t &in)
 {
 	ingest(&in, sizeof(in));
 	return *this;
 }
 
 template < typename type_t >
-cc0::internal::fnv1a64 cc0::internal::fnv1a64::operator()(const type_t &in) const
+cc0::dict_internal::fnv1a64 cc0::dict_internal::fnv1a64::operator()(const type_t &in) const
 {
 	return fnv1a64(*this)(in);
 }
@@ -302,7 +303,7 @@ cc0::internal::fnv1a64 cc0::internal::fnv1a64::operator()(const type_t &in) cons
 //
 
 template < typename type_t >
-cc0::key<type_t>::key(const type_t &v) : k(cc0::internal::fnv1a64(&v, sizeof(v)))
+cc0::key<type_t>::key(const type_t &v) : k(cc0::dict_internal::fnv1a64(&v, sizeof(v)))
 {}
 
 //
